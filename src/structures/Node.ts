@@ -111,6 +111,7 @@ export class Node {
       password: "youshallnotpass",
       secure: false,
       retryAmount: 5,
+      resumable: false,
       retryDelay: 30e3,
       ...options,
     };
@@ -219,7 +220,17 @@ export class Node {
       });
     });
   }
-
+  
+   private configureResuming() {
+        if (!this.resumable) return;
+        await this.send({
+            op: 'configureResuming',
+            key: (!!this.resumable).toString(),
+            timeout: this.retryDelay
+        });
+    }
+  
+  
   private reconnect(): void {
     this.reconnectTimeout = setTimeout(() => {
       if (this.reconnectAttempts >= this.options.retryAmount) {
